@@ -1,5 +1,4 @@
 
-
 class FileProcessor:
     def read_file(self, file_path):
         try:
@@ -19,3 +18,11 @@ class FileProcessor:
         operand = parts[0]
         result = parts[1]
         return operand, result
+    
+    def append_to_file(self, content):
+        self.file_path = "output.txt"
+        try:
+            with open(self.file_path, 'a') as file:
+                file.write(content + "\n")
+        except Exception as e:
+            print("An error occurred while appending content to the file:", e)

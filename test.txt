@@ -1,1 +1,1 @@
-AB+BC=CCD
+AB-BC+HH=CD

@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from itertools import chain
 from string import digits
 import ASTree
+from FileProcessor import *
 
     
 class Constraint(ABC):
@@ -55,6 +56,7 @@ class CSP:
     def get_domain(self) -> dict:
         domain = {}
         first_char = list(set(i[0] for i in self.ast.get_names_as_lists()))#[S, M]
+        first_char.append(self.ast.result[0])
         for i in self.vars:#[]
             if i in first_char:
                 domain[i] = list(range(1, 10))
@@ -120,6 +122,8 @@ class CSP:
             numeric_values = [str(value) for value in temp_assignment.values() if isinstance(value, (int, str)) and str(value).isdigit()]
             current_result = ''.join(numeric_values)
             print(current_result)
+            file_processor = FileProcessor()
+            file_processor.append_to_file(current_result)
             return False
         #MRV
         if self.domain == {}:
