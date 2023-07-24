@@ -28,8 +28,15 @@ class All_different(Constraint):
     def __init__(self, vars) -> None:
         self.vars = vars
     
-    def consist(self, assignment : dict):
-        return len(list(assignment.keys())) == len(set(assignment.values()))
+    def consist(self, domain : dict, value):
+        for i in domain:
+            if value not in domain[i]:
+                continue
+            else:
+                domain[i].remove(value)
+            if len(domain[i]) == 0:
+                return False
+        return True
         
 class CSP:
     def __init__(self, ast : ASTree):
@@ -37,6 +44,7 @@ class CSP:
         self.vars = self.get_vars()
         self.domain = self.get_domain()
         self.constraints = self.add_constraint()
+        self.list_solve = []
         #{A, [B, constraint[0]]}
     
     def get_vars(self):
@@ -70,15 +78,10 @@ class CSP:
         self.domain.pop(var)
         #A
         #B C D
-        for i in self.domain:
-            if value not in self.domain[i]:
-                continue
-            else:
-                self.domain[i].remove(value)
-            if len(self.domain[i]) == 0:
-                return False
-            
-        return True
+        flag = True
+        for i in self.constraints:
+            flag = i.consist(self.domain, value)
+        return flag
     
     #check consitent with all
     def check_consitent(self, var, value, assignment):
@@ -102,7 +105,6 @@ class CSP:
     
     def values_of_domain(self, var):
         result = (self.domain[var]).copy()
-        print
         return result
       
     def take_var_MRV(self):
@@ -121,9 +123,7 @@ class CSP:
             temp_assignment = {key: val for key, val in sorted(assignment.items(), key = lambda ele: ele[0])}
             numeric_values = [str(value) for value in temp_assignment.values() if isinstance(value, (int, str)) and str(value).isdigit()]
             current_result = ''.join(numeric_values)
-            print(current_result)
-            file_processor = FileProcessor()
-            file_processor.append_to_file(current_result)
+            self.list_solve.append(current_result)
             return False
         #MRV
         if self.domain == {}:

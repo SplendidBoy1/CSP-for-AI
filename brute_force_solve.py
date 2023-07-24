@@ -1,5 +1,6 @@
 import ast
 
+from datetime import datetime
 from itertools import chain, permutations
 from string import digits
 class FileProcessor:
@@ -132,11 +133,9 @@ def solve_cryptarithm(addends, result):
     
     results = set()
     for perm in permutations(digits, len(digits)): #perm: những khả năng
-        
         integer_list = list(map(int, perm))
         pairs = zip(letters, integer_list)
         value_dict = dict(pairs)
-        
         if (ast_obj.get_tree_result(value_dict)) == ast_obj.get_result(value_dict):
             numeric_values = [str(value) for value in value_dict.values() if isinstance(value, (int, str)) and str(value).isdigit()]
             current_result = ''.join(numeric_values)
@@ -156,6 +155,7 @@ if __name__ == '__main__':
     print(file_content)
     operands_list, result_operand= file_processor.parse_math_equation(file_content)
 
+    start=datetime.now()
    # ast_obj = AST("SO+MANY+MORE+MEN+SEEM+TO+SAY+THAT+THEY+MAY+SOON+TRY+TO+STAY+AT+HOME+SO+AS+TO+SEE+OR+HEAR+THE+SAME+ONE+MAN+TRY+TO+MEET+THE+TEAM+ON+THE+MOON+AS+HE+HAS+AT+THE+OTHER+TEN", "TESTS")
     ast_obj = AST(operands_list,result_operand)
     addends = ast_obj.get_names_as_lists()
@@ -165,3 +165,4 @@ if __name__ == '__main__':
     # print(ast_obj.get_result(value_dict))
     results = solve_cryptarithm(addends,ast_obj.result)
     print(results)
+    print(datetime.now() - start)
