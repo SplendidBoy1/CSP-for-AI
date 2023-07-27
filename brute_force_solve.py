@@ -1,4 +1,6 @@
 import ast
+import ASTree
+import os
 
 from datetime import datetime
 from itertools import chain, permutations
@@ -52,76 +54,76 @@ class FileProcessor:
         return left_side, right_side
             
 
-class AST:
-    def __init__(self, operand_str: str, result: str):
-        self.tree = ast.parse(operand_str)
+# class AST:
+#     def __init__(self, operand_str: str, result: str):
+#         self.tree = ast.parse(operand_str)
         
-        self.result = result
+#         self.result = result
 
-    def get_result(self, assignments: dict) -> int:
-        sum = 0
-        temp = 1
+#     def get_result(self, assignments: dict) -> int:
+#         sum = 0
+#         temp = 1
         
-        for char in reversed(self.result):
-            sum += assignments[char]*temp
-            temp *= 10
-        return sum
+#         for char in reversed(self.result):
+#             sum += assignments[char]*temp
+#             temp *= 10
+#         return sum
 
-    def get_tree_result_util(self, tree, assignments: dict) -> int:
-        t = type(tree) # xác định mỗi node là operand hay là operator hay la parenthese
+#     def get_tree_result_util(self, tree, assignments: dict) -> int:
+#         t = type(tree) # xác định mỗi node là operand hay là operator hay la parenthese
         
-        if (t == ast.Module):
+#         if (t == ast.Module):
             
-            return self.get_tree_result_util(tree.body, assignments)
-        elif (t == list):
-            return self.get_tree_result_util(tree[0], assignments)
-        elif t == ast.Expr:
-            return self.get_tree_result_util(tree.value, assignments)
-        elif (t == ast.BinOp):
-            o = type(tree.op)
-            if (o == ast.Add):
-                return self.get_tree_result_util(tree.left, assignments) + self.get_tree_result_util(tree.right, assignments)
-            elif (o == ast.Sub):
-                return self.get_tree_result_util(tree.left, assignments) - self.get_tree_result_util(tree.right, assignments)
-            elif (o == ast.Mult):
-                return self.get_tree_result_util(tree.left, assignments) * self.get_tree_result_util(tree.right, assignments)
-        elif (t == ast.Name):
-            sum = 0
-            temp = 1
-            for char in reversed(tree.id):
-                sum += assignments[char]*temp
-                temp *= 10
-            return sum
+#             return self.get_tree_result_util(tree.body, assignments)
+#         elif (t == list):
+#             return self.get_tree_result_util(tree[0], assignments)
+#         elif t == ast.Expr:
+#             return self.get_tree_result_util(tree.value, assignments)
+#         elif (t == ast.BinOp):
+#             o = type(tree.op)
+#             if (o == ast.Add):
+#                 return self.get_tree_result_util(tree.left, assignments) + self.get_tree_result_util(tree.right, assignments)
+#             elif (o == ast.Sub):
+#                 return self.get_tree_result_util(tree.left, assignments) - self.get_tree_result_util(tree.right, assignments)
+#             elif (o == ast.Mult):
+#                 return self.get_tree_result_util(tree.left, assignments) * self.get_tree_result_util(tree.right, assignments)
+#         elif (t == ast.Name):
+#             sum = 0
+#             temp = 1
+#             for char in reversed(tree.id):
+#                 sum += assignments[char]*temp
+#                 temp *= 10
+#             return sum
 
-    def get_tree_result(self, assignments : dict) -> int:
-        # đệ quy vô cây ast -> sử dụng bảng gán giá trị tìm kết quả phép toán
-        return self.get_tree_result_util(self.tree, assignments)
-    def get_names_as_lists(self):
-        names_list = []
+#     def get_tree_result(self, assignments : dict) -> int:
+#         # đệ quy vô cây ast -> sử dụng bảng gán giá trị tìm kết quả phép toán
+#         return self.get_tree_result_util(self.tree, assignments)
+#     def get_names_as_lists(self):
+#         names_list = []
 
-        def extract_names(node):
-            if isinstance(node, ast.Module):
-                for item in node.body:
-                    extract_names(item)
-            elif isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        names_list.append(target.id)
-            elif isinstance(node, ast.Expr):
-                extract_names(node.value)
-            elif isinstance(node, ast.BinOp):
-                extract_names(node.left)
-                extract_names(node.right)
-            elif isinstance(node, ast.Name):
-                names_list.append(node.id)
+#         def extract_names(node):
+#             if isinstance(node, ast.Module):
+#                 for item in node.body:
+#                     extract_names(item)
+#             elif isinstance(node, ast.Assign):
+#                 for target in node.targets:
+#                     if isinstance(target, ast.Name):
+#                         names_list.append(target.id)
+#             elif isinstance(node, ast.Expr):
+#                 extract_names(node.value)
+#             elif isinstance(node, ast.BinOp):
+#                 extract_names(node.left)
+#                 extract_names(node.right)
+#             elif isinstance(node, ast.Name):
+#                 names_list.append(node.id)
         
-        extract_names(self.tree)
-        
-
-        # Tách phần tử cuối cùng thành một phần tử riêng
+#         extract_names(self.tree)
         
 
-        return names_list
+#         # Tách phần tử cuối cùng thành một phần tử riêng
+        
+
+#         return names_list
     
 def solve_cryptarithm(addends, result):
     
@@ -140,14 +142,23 @@ def solve_cryptarithm(addends, result):
             numeric_values = [str(value) for value in value_dict.values() if isinstance(value, (int, str)) and str(value).isdigit()]
             current_result = ''.join(numeric_values)
             results.add(current_result)
-
-    print(', '.join(results))
+            print(', '.join(results))
+            break
+    if len(results) == 0:
+        print("NO SOLUTION")
             
 
             
             
 if __name__ == '__main__':
-    file_path = "test.txt"
+    file_name = "test.txt"
+    current_directory = os.getcwd()
+    for root, dirs, files in os.walk(current_directory):
+        if file_name in files:
+            file_path = os.path.join(root, file_name)
+            #print(file_path)
+            break
+    #file_path = "CSP-for-AI/test.txt"
     # Tạo object FileProcessor
     file_processor = FileProcessor()
     
@@ -157,7 +168,7 @@ if __name__ == '__main__':
 
     start=datetime.now()
    # ast_obj = AST("SO+MANY+MORE+MEN+SEEM+TO+SAY+THAT+THEY+MAY+SOON+TRY+TO+STAY+AT+HOME+SO+AS+TO+SEE+OR+HEAR+THE+SAME+ONE+MAN+TRY+TO+MEET+THE+TEAM+ON+THE+MOON+AS+HE+HAS+AT+THE+OTHER+TEN", "TESTS")
-    ast_obj = AST(operands_list,result_operand)
+    ast_obj = ASTree.AST(operands_list,result_operand)
     addends = ast_obj.get_names_as_lists()
     
     # value_dict = {'D' : 7, 'E' : 5, 'M' : 1, 'N' : 6, 'O' : 0, 'R' : 8, 'S' : 9, 'Y' : 2}
